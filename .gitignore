@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Datasets: se bajan con download_datasets.py (Financing supera el límite de GitHub)
+datasets/*.zip
+datasets/ppd/
+datasets/financing_sdgs/
+datasets/worldbank_sdg/
