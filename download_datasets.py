@@ -37,17 +37,14 @@ SOURCES = [
         ),
     },
     {
-        "name": "World Bank SDG",
-        "url": "https://databank.worldbank.org/data/download/SDG_CSV.zip",
-        "zip_name": "SDG_CSV.zip",
-        "extract_dir": "worldbank_sdg",
+        "name": "World Development Indicators",
+        "url": "https://databank.worldbank.org/data/download/WDI_CSV.zip",
+        "zip_name": "WDI_CSV.zip",
+        "extract_dir": "worldbank_wdi",
         "keep": (
-            "SDGData.csv",
-            "SDGCountry.csv",
-            "SDGSeries.csv",
-            "SDGCountry-Series.csv",
-            "SDGSeries-Time.csv",
-            "SDGFootNote.csv",
+            "WDICSV.csv",
+            "WDICountry.csv",
+            "WDISeries.csv",
         ),
     },
 ]
@@ -98,7 +95,7 @@ def already_extracted(dest_dir: Path, keep: tuple[str, ...]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Descarga PPD, Financing SDGs y World Bank SDG.")
+    parser = argparse.ArgumentParser(description="Descarga PPD, Financing SDGs y WDI.")
     parser.add_argument("--force", action="store_true", help="Vuelve a bajar y extraer aunque ya existan.")
     args = parser.parse_args()
 
@@ -125,7 +122,7 @@ def main() -> int:
     print("Listo. Estructura:")
     print("  datasets/ppd/")
     print("  datasets/financing_sdgs/")
-    print("  datasets/worldbank_sdg/")
+    print("  datasets/worldbank_wdi/")
     return 0
 
 
