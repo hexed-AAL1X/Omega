@@ -1,0 +1,14 @@
+CPUs=8 | train completo=11132 filas | test=2783 filas | workers=8 | reps=5
+
+experimento       frac   filas árboles  secuen.(s)  concur.(s)  speedup  CPU%seq  CPU%con   bal.acc
+tamano_datos      0.25    2783      50      1.1471      0.2815    4.08x    13.7%    95.9%     0.588
+tamano_datos      0.50    5566      50      2.3407      0.6080    3.85x    13.1%    96.0%     0.614
+tamano_datos      0.75    8349      50      3.6630      0.9784    3.74x    13.2%    96.3%     0.615
+tamano_datos      1.00   11132      50      5.5067      1.5023    3.67x    13.2%    96.0%     0.619
+numero_arboles    1.00   11132      25      2.9090      0.5886    4.94x    13.1%    91.9%     0.613
+numero_arboles    1.00   11132      50      4.5120      0.9513    4.74x    13.1%    95.1%     0.619
+numero_arboles    1.00   11132     100      9.4528      2.7597    3.43x    13.2%    98.2%     0.619
+numero_arboles    1.00   11132     200     21.6236      5.5939    3.87x    13.4%    99.0%     0.621
+
+Las versiones concurrentes reproducen exactamente el bosque secuencial en todas las configuraciones.
+Resultados guardados en resultados/escalabilidad.csv
