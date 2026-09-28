@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Genera las imágenes de evidencia de la limpieza (antes vs después) en docs/img/."""
 
 from __future__ import annotations
 
