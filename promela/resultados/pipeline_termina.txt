@@ -1,0 +1,40 @@
+== pipeline :: termina (pan -a -f -N termina)
+Depth=     129 States=    1e+06 Transitions=  1.8e+06 Memory=   141.718	t=     1.02 R=   1e+06
+
+(Spin Version 6.5.2 -- 6 December 2019)
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never claim         	+ (termina)
+	assertion violations	+ (if within scope of claim)
+	acceptance   cycles 	+ (fairness enabled)
+	invalid end states	- (disabled by never claim)
+
+State-vector 76 byte, depth reached 129, errors: 0
+   246231 states, stored (1.29509e+06 visited)
+  1035016 states, matched
+  2330103 transitions (= visited+matched)
+      971 atomic steps
+hash conflicts:      1203 (resolved)
+
+Stats on memory usage (in Megabytes):
+   24.422	equivalent memory usage for states (stored*(State-vector + overhead))
+   17.087	actual memory usage for states (compression: 69.97%)
+         	state-vector as stored = 45 byte + 28 byte overhead
+  128.000	memory used for hash table (-w24)
+    0.534	memory used for DFS stack (-m10000)
+  145.526	total actual memory usage
+
+
+unreached in proctype Worker
+	(0 of 14 states)
+unreached in proctype Cerrador
+	(0 of 3 states)
+unreached in proctype Main
+	(0 of 53 states)
+unreached in claim termina
+	_spin_nvr.tmp:6, state 6, "-end-"
+	(1 of 6 states)
+
+pan: elapsed time 1.33 seconds
+pan: rate 973749.62 states/second
