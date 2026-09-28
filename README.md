@@ -151,3 +151,24 @@ agencia por filas: simplemente no se leen, porque emplearlas como input sería f
 Las 1 252 036 filas de Financing y las 396 970 de WDICSV no se recortan como tabla de entrenamiento: se agregan y se pegan. WDI también se exporta en formato largo para 2000–2013 (`wdi_2000_2013.parquet`, 2 412 199 registros). El parquet conserva 
 las 20 623 filas sanitizadas. fila_ok identifica el subconjunto usable (país real e inicio entre 1990 y 2017): 13 915 filas. Las otras 6 708 no se borran, para
 poder describir sesgo y cobertura. De las usable, 8 389 caen en 2000–2013, donde pueden cruzar las tres fuentes; se guardan en `model_table_2000_2013.parquet`. La tasa de éxito es 73.7% en la tabla sanitizada y 75.4% dentro de fila_ok.
+
+
+## Random Forest en Go (secuencial vs concurrente)
+
+Implementado solo con la biblioteca estándar de Go (sin librerías de terceros). Go no lee parquet de forma nativa, así que la tabla limpia se exporta a CSV.
+
+```bash
+python exportar_csv.py                         # datasets/csv/model_table.csv
+go run ./cmd/secuencial -trees 50              # entrenamiento secuencial
+go run ./cmd/concurrente -trees 50 -workers 8  # worker pool de goroutines
+go run ./cmd/benchmark -trees 50 -reps 10 -workers 1,2,4,8,16
+```
+
+| Carpeta | Contenido |
+|---|---|
+| `rfcore/` | Lectura del CSV, árbol CART (Gini), Random Forest balanceado, métricas y media recortada. |
+| `cmd/secuencial` | Entrena los árboles uno detrás de otro. |
+| `cmd/concurrente` | Worker pool: N goroutines toman árboles de un canal; `sync.WaitGroup` espera a todas y `sync.Mutex` protege el estado compartido. |
+| `cmd/benchmark` | Repite cada configuración, calcula media recortada, speedup y eficiencia, y guarda `resultados/benchmark.csv`. |
+
+Cada árbol usa la semilla `seed + i`, así ambas versiones producen exactamente el mismo bosque y el benchmark lo verifica. `go run -race ./cmd/concurrente` no detecta condiciones de carrera.
