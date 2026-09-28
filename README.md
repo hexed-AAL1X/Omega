@@ -21,15 +21,16 @@ Los principales datasets recopilados incluyen:
 **Volumen de cooperación y ODS 17:**
 - FinancingtotheSDGsDataset_v1.0.csv
   
-**Contexto socioeconómico del país:**
+**Contexto socioeconómico del país (World Development Indicators del Banco Mundial):**
 
-- SDGData.csv
-- SDGCountry.csv
+- WDICSV.csv
+- WDICountry.csv
 
 
 El volumen y la estructura de los datos permiten aplicar concurrencia en:
 - Procesamiento simultáneo de lotes de proyectos evaluados
 - Agregación paralela de 1 252 036 filas de Financing
+- Procesamiento paralelo de 2 412 199 registros de WDI (país × indicador × año, 2000–2013)
 - Cruce concurrente por ISO3 y año de inicio
 - Análisis distribuido de cobertura histórica y de nulos
 
@@ -38,6 +39,12 @@ Esto permite reducir tiempos de procesamiento y mejorar la escalabilidad del sis
 
 
 Los datasets finales fueron los siguientes:
+
+| **Archivo** | **Registros** | **Descripción** |
+|---|---:|---|
+| `model_table.parquet` | 20 623 | Una fila por proyecto evaluado, con etiqueta y contexto. |
+| `model_table_2000_2013.parquet` | 8 389 | Proyectos con país real que inician en 2000–2013, la ventana común con Financing. |
+| `wdi_2000_2013.parquet` | 2 412 199 | WDI en formato largo (país × indicador × año) para 2000–2013, solo países reales. |
 
 **model_table.parquet**
 
@@ -85,13 +92,13 @@ Los datasets finales fueron los siguientes:
 
 
 El caso de uso priorizado se corresponde con un predictor del éxito de proyectos de desarrollo sostenible cuya fuente de etiquetas es el PPD de AidData
-y cuyo contexto proviene de Financing to the SDGs y de los indicadores ODS del Banco Mundial. El objetivo del sistema reside en comparar atributos conocidos al inicio del
+y cuyo contexto proviene de Financing to the SDGs y de los World Development Indicators (WDI) del Banco Mundial. El objetivo del sistema reside en comparar atributos conocidos al inicio del
 proyecto (donante, sector, país, año y entorno del receptor) con el resultado ex post, finalizando en una clasificación de éxito cuando la nota global es mayor o igual a 4.
 
 
 Para este trabajo se da forma a un dataset principal de modelado y a dos paneles de apoyo. El primero es model_table.parquet (también model_df en el notebook), que almacena una 
 fila por proyecto evaluado, con la etiqueta success, el donante, el ISO3, el año de inicio, el sector, la duración en años, el compromiso y el contexto del país. Los paneles de apoyo son 
-el del Banco Mundial (país x año, indicadores ODS) y el de Financing (país x año, n_donors, usd_total_net, usd_ods17).
+el del Banco Mundial (país x año, indicadores WDI) y el de Financing (país x año, n_donors, usd_total_net, usd_ods17).
 
 
 La construcción de este dataset fue realizada por medio del notebook EDA.ipynb, que posee como función el procesamiento de los archivos CSV originales, 
@@ -110,8 +117,8 @@ Para construir la tabla de proyectos evaluados se utilizó:
 - PPD2_Jan_21_2022.csv
 
 Para construir el contexto del país se utilizaron:
-- SDGData.csv
-- SDGCountry.csv
+- WDICSV.csv
+- WDICountry.csv
   
 Para construir el entorno de cooperación (ODS 17) se utilizó:
 - FinancingtotheSDGsDataset_v1.0.csv
@@ -123,7 +130,7 @@ Se implementó la función de limpieza como parte del preprocesamiento, en la qu
 Por ejemplo: “Viet Nam”, “Vietnam” y el código VNM se homologaron al metavalor ISO3 VNM. Côte d’Ivoire, Congo y West Bank and Gaza quedan como CIV, COG y PSE. El cruce se hace por código y no por cadena libre.
 
 De igual manera, se llevó a cabo el proceso de corrección de la unidad de duración. En el PPD la columna project_duration está en días (mediana cruda ≈ 2 177, equivalentes a unos 6 años). El sistema la convierte a duration_years; si el valor es negativo, nulo de origen, ambiguo entre 1 y 40, o mayor a 25 años tras convertir, se anula. Tras la conversión, duration_years tiene mediana 6.1 años (mínimo 0.11, máximo 23.1).
-También se incorporaron validaciones de campos numéricos para evitar inconsistencias durante el procesamiento de los datos. Los ratings fuera de 1–6 no se conservan como etiqueta. El compromiso no positivo pasa a nulo (621 celdas). Los porcentajes se exigen en 0–100. Los 869 decommitments de Financing (compromiso < 0, 0.069%) no se recortaron a cero: son cancelaciones reales y se marcaron. Los 44 agregados del Banco Mundial (World, South Asia, Arab World) no se tratan como país.
+También se incorporaron validaciones de campos numéricos para evitar inconsistencias durante el procesamiento de los datos. Los ratings fuera de 1–6 no se conservan como etiqueta. El compromiso no positivo pasa a nulo (621 celdas). Los porcentajes se exigen en 0–100. Los 869 decommitments de Financing (compromiso < 0, 0.069%) no se recortaron a cero: son cancelaciones reales y se marcaron. Los 47 agregados del Banco Mundial (World, South Asia, Arab World) no se tratan como país.
 
 
 **Filas eliminadas del PPD**
@@ -141,6 +148,27 @@ Esos casos ya quedan cubiertos en los cortes anteriores. No se eliminan las apro
 agencia por filas: simplemente no se leen, porque emplearlas como input sería fuga de información.
 
 
-Las 1 252 036 filas de Financing y las 106 488 de SDGData no se recortan como tabla de entrenamiento: se agregan y se pegan. El parquet conserva 
+Las 1 252 036 filas de Financing y las 396 970 de WDICSV no se recortan como tabla de entrenamiento: se agregan y se pegan. WDI también se exporta en formato largo para 2000–2013 (`wdi_2000_2013.parquet`, 2 412 199 registros). El parquet conserva 
 las 20 623 filas sanitizadas. fila_ok identifica el subconjunto usable (país real e inicio entre 1990 y 2017): 13 915 filas. Las otras 6 708 no se borran, para
-poder describir sesgo y cobertura. De las usable, 8 389 caen en 2000–2013, donde pueden cruzar las tres fuentes. La tasa de éxito es 73.7% en la tabla sanitizada y 75.4% dentro de fila_ok.
+poder describir sesgo y cobertura. De las usable, 8 389 caen en 2000–2013, donde pueden cruzar las tres fuentes; se guardan en `model_table_2000_2013.parquet`. La tasa de éxito es 73.7% en la tabla sanitizada y 75.4% dentro de fila_ok.
+
+
+## Random Forest en Go (secuencial vs concurrente)
+
+Implementado solo con la biblioteca estándar de Go (sin librerías de terceros). Go no lee parquet de forma nativa, así que la tabla limpia se exporta a CSV.
+
+```bash
+python exportar_csv.py                         # datasets/csv/model_table.csv
+go run ./cmd/secuencial -trees 50              # entrenamiento secuencial
+go run ./cmd/concurrente -trees 50 -workers 8  # worker pool de goroutines
+go run ./cmd/benchmark -trees 50 -reps 10 -workers 1,2,4,8,16
+```
+
+| Carpeta | Contenido |
+|---|---|
+| `rfcore/` | Lectura del CSV, árbol CART (Gini), Random Forest balanceado, métricas y media recortada. |
+| `cmd/secuencial` | Entrena los árboles uno detrás de otro. |
+| `cmd/concurrente` | Worker pool: N goroutines toman árboles de un canal; `sync.WaitGroup` espera a todas y `sync.Mutex` protege el estado compartido. |
+| `cmd/benchmark` | Repite cada configuración, calcula media recortada, speedup y eficiencia, y guarda `resultados/benchmark.csv`. |
+
+Cada árbol usa la semilla `seed + i`, así ambas versiones producen exactamente el mismo bosque y el benchmark lo verifica. `go run -race ./cmd/concurrente` no detecta condiciones de carrera.

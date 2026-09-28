@@ -7,5 +7,5 @@ __pycache__/
 datasets/*.zip
 datasets/ppd/
 datasets/financing_sdgs/
-datasets/worldbank_sdg/
+datasets/worldbank_wdi/
 datasets/parquet/financing.parquet

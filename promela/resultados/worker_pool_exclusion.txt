@@ -1,0 +1,38 @@
+== worker_pool :: exclusion (pan -a -N exclusion)
+pan: ltl formula exclusion
+
+(Spin Version 6.5.2 -- 6 December 2019)
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never claim         	+ (exclusion)
+	assertion violations	+ (if within scope of claim)
+	acceptance   cycles 	+ (fairness disabled)
+	invalid end states	- (disabled by never claim)
+
+State-vector 72 byte, depth reached 205, errors: 0
+    60180 states, stored
+    32377 states, matched
+    92557 transitions (= stored+matched)
+       12 atomic steps
+hash conflicts:        39 (resolved)
+
+Stats on memory usage (in Megabytes):
+    5.739	equivalent memory usage for states (stored*(State-vector + overhead))
+    4.387	actual memory usage for states (compression: 76.44%)
+         	state-vector as stored = 48 byte + 28 byte overhead
+  128.000	memory used for hash table (-w24)
+    0.534	memory used for DFS stack (-m10000)
+  132.831	total actual memory usage
+
+
+unreached in proctype Worker
+	(0 of 24 states)
+unreached in proctype Main
+	(0 of 41 states)
+unreached in claim exclusion
+	_spin_nvr.tmp:8, state 10, "-end-"
+	(1 of 10 states)
+
+pan: elapsed time 0.06 seconds
+pan: rate   1003000 states/second

@@ -1,0 +1,40 @@
+== pipeline :: seguridad (pan_seguridad )
+
+(Spin Version 6.5.2 -- 6 December 2019)
+	+ Partial Order Reduction
+
+Full statespace search for:
+	never claim         	- (not selected)
+	assertion violations	+
+	cycle checks       	- (disabled by -DSAFETY)
+	invalid end states	+
+
+State-vector 60 byte, depth reached 75, errors: 0
+   246312 states, stored
+   133433 states, matched
+   379745 transitions (= stored+matched)
+      971 atomic steps
+hash conflicts:        88 (resolved)
+
+Stats on memory usage (in Megabytes):
+   20.671	equivalent memory usage for states (stored*(State-vector + overhead))
+   15.230	actual memory usage for states (compression: 73.68%)
+         	state-vector as stored = 37 byte + 28 byte overhead
+  128.000	memory used for hash table (-w24)
+    0.534	memory used for DFS stack (-m10000)
+  143.671	total actual memory usage
+
+
+unreached in proctype Worker
+	(0 of 14 states)
+unreached in proctype Cerrador
+	(0 of 3 states)
+unreached in proctype Main
+	(0 of 53 states)
+unreached in claim termina
+	_spin_nvr.tmp:4, state 3, "(!(terminado))"
+	_spin_nvr.tmp:6, state 6, "-end-"
+	(2 of 6 states)
+
+pan: elapsed time 0.17 seconds
+pan: rate 1448894.1 states/second
