@@ -1,0 +1,20 @@
+Financing: 465 MB | 1252036 filas | 2573 país-año | 0 inválidas | CPUs=8
+
+Speedup por número de workers (archivo completo)
+modo         workers media_rec(s)   desv(s)   speedup  eficien.    CPU %   heap MB
+secuencial         1       5.6394    0.2323     1.00x      1.00    13.2%     909.3
+concurrente        1       5.3786    0.2177     1.05x      1.05    13.4%     912.1
+concurrente        2       3.1788    0.1466     1.77x      0.89    25.2%     910.7
+concurrente        4       1.9794    0.1089     2.85x      0.71    50.1%     909.6
+concurrente        8       1.6380    0.1331     3.44x      0.43    97.1%     915.9
+concurrente       16       1.8070    0.1326     3.12x      0.20    96.6%     923.9
+
+Escalabilidad por tamaño de datos (concurrente con 8 workers)
+  frac      filas   secuencial  concurrente   speedup
+  0.25     300434      1.2014s      0.3892s     3.09x
+  0.50     607222      2.4595s      0.7758s     3.17x
+  0.75     929169      3.8812s      1.0920s     3.55x
+  1.00    1252036      5.3891s      1.5210s     3.54x
+
+Todas las ejecuciones concurrentes coinciden con la secuencial.
+Resultados en resultados/pipeline_workers.csv y resultados/pipeline_tamano.csv
